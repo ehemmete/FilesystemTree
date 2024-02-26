@@ -13,7 +13,7 @@ public struct FileSystemTree {
         var isHidden: Bool
     }
     
-    public func getContentsText(directory: URL, prefix: String, showHiddenFiles: Bool) throws -> (String, Int, Int) {
+    public func getContentsText(directory: URL, prefix: String, showHiddenFiles: Bool) throws -> ([String], Int, Int) {
         var directoryCount = 0
         var fileCount = 0
         var output: [String] = []
@@ -38,17 +38,19 @@ public struct FileSystemTree {
                 
                 if try path.resourceValues(forKeys: [.isDirectoryKey]).isDirectory! {
                     directoryCount += 1
-                    let _ = try getContentsText(directory: path, prefix: (prefix + vertical), showHiddenFiles: showHiddenFiles)
+                    let newData = try getContentsText(directory: path, prefix: (prefix + vertical), showHiddenFiles: showHiddenFiles)
+                    output.append(contentsOf: newData.0)
+                    directoryCount = directoryCount + newData.1
+                    fileCount = fileCount + newData.2
                 } else {
                     fileCount += 1
                 }
             }
         }
-        return (output.joined(separator: "\n"), directoryCount, fileCount)
+        return (output, directoryCount, fileCount)
     }
     
-    
-    public func getContentsHTML(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> (String, Int, Int) {
+    public func getContentsHTML(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> ([String], Int, Int) {
         var directoryCount = 0
         var fileCount = 0
         var output: [String] = []
@@ -67,7 +69,10 @@ public struct FileSystemTree {
                         output.append("<details><summary>\(item.url.lastPathComponent)</summary></details>")
                     } else {
                         output.append("<details><summary>\(item.url.lastPathComponent)</summary><dd>")
-                        let _ = try getContentsHTML(entryArray: entryArray, parentFolderURL: item.url, showHiddenFiles: showHiddenFiles)
+                        let newData = try getContentsHTML(entryArray: entryArray, parentFolderURL: item.url, showHiddenFiles: showHiddenFiles)
+                        output.append(contentsOf: newData.0)
+                        directoryCount = directoryCount + newData.1
+                        fileCount = fileCount + newData.2
                         output.append("</dd></details>")
                     }
                 } else {
@@ -76,10 +81,10 @@ public struct FileSystemTree {
                 }
             }
         }
-        return (output.joined(separator: "\n"), directoryCount, fileCount)
+        return (output, directoryCount, fileCount)
     }
     
-    public func getContentsJSON(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> (String, Int, Int) {
+    public func getContentsJSON(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> ([String], Int, Int) {
         var directoryCount = 0
         var fileCount = 0
         var output: [String] = []
@@ -104,7 +109,10 @@ public struct FileSystemTree {
                         }
                     } else {
                         output.append("{\"type\":\"\(item.type)\",\"name\":\"\(item.url.lastPathComponent)\",\"contents\":[")
-                        let _ = try getContentsJSON(entryArray: entryArray, parentFolderURL: item.url, showHiddenFiles: showHiddenFiles)
+                        let newData = try getContentsJSON(entryArray: entryArray, parentFolderURL: item.url, showHiddenFiles: showHiddenFiles)
+                        output.append(contentsOf: newData.0)
+                        directoryCount = directoryCount + newData.1
+                        fileCount = fileCount + newData.2
                         if itemPath != lastItemPath {
                             output.append("]},")
                         } else {
@@ -121,7 +129,7 @@ public struct FileSystemTree {
                 }
             }
         }
-        return (output.joined(separator: "\n"), directoryCount, fileCount)
+        return (output, directoryCount, fileCount)
     }
     
     public func getArray(sourceURL: URL, showHiddenFiles: Bool) async -> [entry] {
