@@ -2,7 +2,9 @@
 // https://docs.swift.org/swift-book
 import Foundation
 
-public enum FileSystemTree {
+public struct FileSystemTree {
+    
+    public init() { }
     
     public struct entry {
         var url: URL
