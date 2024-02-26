@@ -2,7 +2,7 @@
 // https://docs.swift.org/swift-book
 import Foundation
 
-public struct FileSystemTree {
+public class FileSystemTree {
     
     public struct entry {
         var url: URL
