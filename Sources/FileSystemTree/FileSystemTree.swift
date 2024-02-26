@@ -4,7 +4,7 @@ import Foundation
 
 public struct FileSystemTree {
     
-    struct entry {
+    public struct entry {
         var url: URL
         var type: String
         var parentURL: URL
