@@ -11,7 +11,7 @@ struct FileSystemTree {
         var isHidden: Bool
     }
     
-    func getContentsText(directory: URL, prefix: String, outputType: String, showHiddenFiles: Bool) throws -> (String, Int, Int) {
+    public func getContentsText(directory: URL, prefix: String, showHiddenFiles: Bool) throws -> (String, Int, Int) {
         var directoryCount = 0
         var fileCount = 0
         var output: [String] = []
@@ -36,7 +36,7 @@ struct FileSystemTree {
                 
                 if try path.resourceValues(forKeys: [.isDirectoryKey]).isDirectory! {
                     directoryCount += 1
-                    let _ = try getContentsText(directory: path, prefix: (prefix + vertical), outputType: outputType, showHiddenFiles: showHiddenFiles)
+                    let _ = try getContentsText(directory: path, prefix: (prefix + vertical), showHiddenFiles: showHiddenFiles)
                 } else {
                     fileCount += 1
                 }
@@ -46,7 +46,7 @@ struct FileSystemTree {
     }
     
     
-    func getContentsHTML(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> (String, Int, Int) {
+    public func getContentsHTML(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> (String, Int, Int) {
         var directoryCount = 0
         var fileCount = 0
         var output: [String] = []
@@ -77,7 +77,7 @@ struct FileSystemTree {
         return (output.joined(separator: "\n"), directoryCount, fileCount)
     }
     
-    func getContentsJSON(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> (String, Int, Int) {
+    public func getContentsJSON(entryArray: [entry], parentFolderURL: URL, showHiddenFiles: Bool) throws -> (String, Int, Int) {
         var directoryCount = 0
         var fileCount = 0
         var output: [String] = []
@@ -122,7 +122,7 @@ struct FileSystemTree {
         return (output.joined(separator: "\n"), directoryCount, fileCount)
     }
     
-    func getArray(sourceURL: URL, showHiddenFiles: Bool) async -> [entry] {
+    public func getArray(sourceURL: URL, showHiddenFiles: Bool) async -> [entry] {
         if #available(macOS 10.15, *) {
             return await Task {
                 var output: [entry] = []
